@@ -1,0 +1,54 @@
+# Java / Maven
+target/
+*.class
+*.log
+hs_err_pid*
+replay_pid*
+
+# Eclipse
+.metadata/
+.settings/
+bin/
+tmp/
+.project
+.classpath
+.factorypath
+.recommenders/
+*.launch
+
+# IntelliJ
+.idea/
+*.iml
+
+# Angular / React / Node / Vite
+node_modules/
+dist/
+.angular/
+.vite/
+coverage/
+.nx/
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Configuration locale et secrets
+.env
+.env.*
+!.env.example
+local.properties
+application-local.properties
+application-local.yml
+application-local.yaml
+
+# Fichiers temporaires
+*.tmp
+*.bak
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# Archives de sauvegarde
+save xcompta *.zip

@@ -1,0 +1,77 @@
+xCompta Core — Notes sur l'état actuel
+=====================================
+
+Objet du module
+---------------
+Ce module contient le noyau métier comptable de xCompta. Il est conçu pour
+rester indépendant des interfaces utilisateur et des mécanismes de persistance.
+Le projet est construit avec Java 21 et Maven.
+
+Principales classes métier
+--------------------------
+- Compte, Classe, CategorieCompte et Journal décrivent les références comptables.
+- Ecriture est la base commune des écritures comptables.
+- EcritureDeBrouillard représente une écriture en cours de saisie, modifiable.
+- EcritureValidee représente une écriture validée.
+- Mouvement est la base commune des mouvements comptables.
+- MouvementDeBrouillard et MouvementValidee ont des responsabilités distinctes ;
+  ils partagent l'égalité métier définie dans Mouvement.
+- Exercice, Solde et Lettrage complètent le modèle métier.
+- ValidableMetier participe aux contrôles des règles métier.
+
+Validation et copie des écritures
+---------------------------------
+Les tests d'intégration vérifient notamment la validité progressive d'une
+écriture de brouillard et la préparation d'une écriture validée par copie.
+Ils couvrent les données d'en-tête, les mouvements, leurs rattachements,
+les identifiants réinitialisés et certains cas particuliers, notamment les
+lignes de mouvement vides.
+
+Les tests utilisant de vrais mouvements sont privilégiés lorsque l'objectif
+est de vérifier la copie, le rattachement, l'ordre ou l'intégrité des
+références entre objets.
+
+Organisation des tests
+----------------------
+Les tests JUnit 5 sont placés sous src/test/java, dans des packages par
+entité métier et dans des packages d'intégration.
+
+Leurs classes portent des noms décrivant le comportement testé, plutôt que
+l'ancienne numérotation Test1, Test2, Test3, etc. Exemples :
+- Construct2Arg et ConstructInvalide : construction et arguments invalides ;
+- EqualsHashCode : égalité et code de hachage ;
+- ModificationEnTete et MutationMouvement : modifications métier ;
+- ValidationProgressive : évolution de la validité pendant la saisie ;
+- ValidationConstruct0arg, ValidationConstruct4arg et ValidationConstruct5arg :
+  copie pour validation selon le constructeur utilisé ;
+- ValidationCopieCasParticuliers : scénarios complémentaires de validation ;
+- Contrepassation et CalculsComptables : opérations comptables.
+
+Les classes JeuDonnees..., TestTool et VerificationCopieValidation fournissent
+des données ou des vérifications communes ; ce ne sont pas des suites de tests
+à exécuter directement.
+
+Exécution des tests
+-------------------
+Depuis la racine du module, où se trouve pom.xml :
+
+    mvn clean test
+
+Pour exécuter également la phase de vérification et générer le rapport
+JaCoCo configuré dans le projet :
+
+    mvn clean verify
+
+IMPORTANT : les noms descriptifs des classes de tests ne suivent pas tous
+les conventions de découverte par défaut de Maven Surefire. Le pom.xml doit
+donc configurer explicitement la découverte de ces classes. Vérifier le nombre
+de tests réellement exécutés dans les rapports Maven après toute modification
+de cette configuration.
+
+État et limites
+---------------
+Le noyau métier et sa suite de tests sont en cours de finalisation.
+Les règles et fonctionnalités qui restent à stabiliser doivent être vérifiées
+contre le code et les résultats des tests avant d'être déclarées achevées.
+Ce document ne constitue pas un relevé de couverture ni une garantie que tous
+les tests passent.
