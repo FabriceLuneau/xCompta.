@@ -1,7 +1,6 @@
 package fr.xcompta.core.base.test.integration.ecrituredebrouillard;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -148,10 +147,9 @@ class ModificationEnTete {
 	@DisplayName("Un libellé vide rend l'écriture invalide")
 	void libelleVide() throws XComptaCoreException {
 
-		assertThrows(XComptaCoreIllegalArgumentException.class,
-				() -> ecriture.setLibelle(""));
+		assertThrows(XComptaCoreIllegalArgumentException.class, () -> ecriture.setLibelle(""));
 
-		//La modification a été rejetée l'Ecriture reste  inchangée et toujours valide
+		// La modification a été rejetée l'Ecriture reste inchangée et toujours valide
 		assertTrue(ecriture.estValide());
 	}
 
@@ -159,10 +157,9 @@ class ModificationEnTete {
 	@DisplayName("Un libellé composé d'espaces rend l'écriture invalide")
 	void libelleBlanc() throws XComptaCoreException {
 
-		assertThrows(XComptaCoreIllegalArgumentException.class,
-		() -> ecriture.setLibelle("   "));
+		assertThrows(XComptaCoreIllegalArgumentException.class, () -> ecriture.setLibelle("   "));
 
-		//La modification a été rejetée l'Ecriture reste  inchangée et toujours valide
+		// La modification a été rejetée l'Ecriture reste inchangée et toujours valide
 		assertTrue(ecriture.estValide());
 	}
 
@@ -170,10 +167,9 @@ class ModificationEnTete {
 	@DisplayName("La correction d'un libellé vide rétablit la validité")
 	void correctionEntete() throws XComptaCoreException {
 
-		assertThrows(XComptaCoreIllegalArgumentException.class,
-		() -> ecriture.setLibelle(""));
+		assertThrows(XComptaCoreIllegalArgumentException.class, () -> ecriture.setLibelle(""));
 
-		//La modification a été rejetée l'Ecriture reste  inchangée et toujours valide
+		// La modification a été rejetée l'Ecriture reste inchangée et toujours valide
 		assertTrue(ecriture.estValide());
 
 		ecriture.setLibelle("Achat fournisseur corrigé");

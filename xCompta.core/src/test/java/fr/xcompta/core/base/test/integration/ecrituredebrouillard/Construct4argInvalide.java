@@ -11,7 +11,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import fr.xcompta.core.base.EcritureDeBrouillard;
 import fr.xcompta.core.base.Journal;
 import fr.xcompta.core.base.exception.XComptaCoreIllegalArgumentException;
-import fr.xcompta.core.base.exception.XComptaCoreNullPointerException;
 
 /**
  * Teste les entêtes invalides d'une écriture de brouillard créée avec le
@@ -38,6 +37,7 @@ class Construct4argInvalide {
 	@MethodSource(SOURCE + "idsInvalides")
 	@DisplayName("Constructeur à 4 arguments : refuse un identifiant négatif")
 	void idInvalide(final int id) {
-		assertThrows(XComptaCoreIllegalArgumentException.class, () -> new EcritureDeBrouillard(id, LIBELLE, DATE, JOURNAL));
+		assertThrows(XComptaCoreIllegalArgumentException.class,
+				() -> new EcritureDeBrouillard(id, LIBELLE, DATE, JOURNAL));
 	}
 }
