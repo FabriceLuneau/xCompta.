@@ -77,7 +77,8 @@ public final class EcritureDeBrouillard extends Ecriture<MouvementDeBrouillard> 
 	 * @throws XComptaCoreException si l'état initial de l'objet est incohérent
 	 */
 	public EcritureDeBrouillard() throws XComptaCoreException {
-		super(0, "nouvelle écriture", LocalDate.now(), null, null);
+		super(0, "nouvelle écriture", LocalDate.now(), null, null,
+				source -> new MouvementDeBrouillard(source.getCompte(), source.getMontant()));
 		
 		// Aucun mouvement initial : aucun rattachement nécessaire.
 		testPostConstruction();
@@ -106,14 +107,16 @@ public final class EcritureDeBrouillard extends Ecriture<MouvementDeBrouillard> 
 		 * long numeroPreEnregistrement, LocalDate date, String libelle, Journal
 		 * journal)
 		 */
-		super(id, libelle, date, journal, List.of());
+		super(id, libelle, date, journal, List.of(),
+				source -> new MouvementDeBrouillard(source.getCompte(), source.getMontant()));
 
 		testPostConstruction();
 	}
 
 	/**
 	 * Reconstruit une écriture de brouillard avec ses mouvements. Les mouvements
-	 * sont rattachés à cette écriture sans valider son contenu comptable.
+	 * sont copiés dans de nouvelles instances puis rattachés à cette écriture,
+	 * sans modifier les mouvements sources ni valider son contenu comptable.
 	 *
 	 * @param id         identifiant technique (0 si non persisté)
 	 * @param libelle    libellé comptable
@@ -125,7 +128,8 @@ public final class EcritureDeBrouillard extends Ecriture<MouvementDeBrouillard> 
 	 */
 	public EcritureDeBrouillard(final int id, final String libelle, final LocalDate date, final Journal journal,
 			final List<MouvementDeBrouillard> mouvements) throws XComptaCoreException {
-		super(id, libelle, date, journal, mouvements);
+		super(id, libelle, date, journal, mouvements,
+				source -> new MouvementDeBrouillard(source.getCompte(), source.getMontant()));
 		
 		testPostConstruction();
 	}

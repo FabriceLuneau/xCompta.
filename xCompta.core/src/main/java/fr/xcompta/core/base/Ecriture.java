@@ -12,6 +12,7 @@ import java.util.Set;
 
 import fr.xcompta.core.base.exception.XComptaCoreException;
 import fr.xcompta.core.base.exception.XComptaCoreIllegalStateException;
+import fr.xcompta.core.base.exception.XComptaCoreNullPointerException;
 import fr.xcompta.core.base.exception.ecriture.EcritureCompenseException;
 import fr.xcompta.core.base.exception.ecriture.EcritureMouvementViolationContrainteReferentielleException;
 
@@ -34,7 +35,10 @@ import fr.xcompta.core.base.exception.ecriture.EcritureMouvementViolationContrai
  */
 public abstract class Ecriture<M extends Mouvement> implements Iterable<M>, ValidableMetier {
 	/** Identifiant technique de l'écriture. */
-	int id; // État commun : modifiable uniquement par EcritureDeBrouillard.
+	int id = 0; // État commun : modifiable uniquement par EcritureDeBrouillard.
+	
+	//numéro de préenregistrement comun aux aux ecritures de brouillard et aux écritures validées
+	//int numeroDeOreEnregistrement = 0; 
 
 	/** Date comptable de l'écriture. */
 	LocalDate date = LocalDate.now();
@@ -55,65 +59,84 @@ public abstract class Ecriture<M extends Mouvement> implements Iterable<M>, Vali
 	private final List<M> mouvements = new ArrayList<>();
 
 	/**
-	 * Construit une écriture comptable.
+	 * Construit une écriture en dupliquant ses mouvements sources.
 	 *
-	 * <p>La liste initiale peut être {@code null} ou vide. Les références des
-	 * mouvements sont copiées dans une collection interne indépendante ; les
-	 * mouvements eux-mêmes ne sont pas dupliqués.</p>
+	 * <p>Les mouvements sources ne sont jamais modifiés ni rattachés à cette
+	 * écriture. Ils peuvent donc appartenir à une autre écriture.</p>
 	 *
-	 * <p>Avant tout rattachement, le constructeur vérifie que la liste ne
-	 * contient aucun élément {@code null} et qu'aucun mouvement n'appartient
-	 * déjà à une autre écriture, ni deux fois la même instance. Cette vérification préalable évite de rattacher
-	 * partiellement les mouvements lorsqu'une entrée est invalide.</p>
+	 * <p>Les vérifications et la copie sont effectuées avant le rattachement.
+	 * La fonction de copie, fournie par la sous-classe, construit le type
+	 * concret de mouvement approprié (brouillard ou validé). Elle doit
+	 * retourner une nouvelle instance détachée, sans effet sur la source.</p>
 	 *
-	 * <p>Les contrôles propres au brouillard et aux écritures validées sont
-	 * assurés par les sous-classes.</p>
+	 * <p>Une liste {@code null} ou vide produit une écriture sans mouvements.
+	 * Les contrôles métier propres à chaque type d'écriture restent assurés
+	 * par les sous-classes.</p>
 	 *
 	 * @param id identifiant technique
 	 * @param libelle libellé comptable
 	 * @param date date comptable
 	 * @param journal journal comptable
-	 * @param mouvementsSource mouvements initiaux, éventuellement {@code null}
-	 * @throws NullPointerException si un mouvement de la liste est {@code null}
-	 * @throws IllegalArgumentException si la liste contient deux fois la même instance
+	 * @param mouvementsSource mouvements à copier, éventuellement {@code null}
+	 * @param fabriqueMouvement fonction créant une copie indépendante de type M
+	 * @throws XComptaCoreNullPointerException si un mouvement source est null
+	 * @throws IllegalArgumentException si une instance source apparaît deux fois
+	 *         ou si une copie n'est pas une nouvelle instance
 	 * @throws EcritureMouvementViolationContrainteReferentielleException
-	 *         si un mouvement appartient déjà à une autre écriture
+	 *         si une copie est déjà rattachée à une écriture
 	 */
+	@FunctionalInterface
+	protected interface FabriqueMouvement<T extends Mouvement> {
+		T copier(Mouvement source) throws XComptaCoreException;
+	}
+
 	protected Ecriture(int id, String libelle, LocalDate date, Journal journal,
-			List<? extends M> mouvementsSource)
-			throws EcritureMouvementViolationContrainteReferentielleException {
+			List<? extends Mouvement> mouvementsSource,
+			FabriqueMouvement<M> fabriqueMouvement)
+			throws XComptaCoreException {
 		this.id = id;
 		this.libelle = libelle;
 		this.date = date;
 		this.journal = journal;
 
-		// Une liste absente équivaut à une liste initiale vide.
-		if (mouvementsSource == null) {
+		if (mouvementsSource == null || mouvementsSource.isEmpty()) {
 			return;
 		}
+		Objects.requireNonNull(fabriqueMouvement, "La fabrique de mouvements est obligatoire.");
 
-		// Détecte les doublons par identité, indépendamment de equals/hashCode.
-		Set<Mouvement> mouvementsVus =
-				Collections.newSetFromMap(new IdentityHashMap<>());
-
-		// Premier passage : aucun mouvement n'est modifié.
-		for (M mouvement : mouvementsSource) {
-			Objects.requireNonNull(mouvement,
-					"La liste ne doit pas contenir de mouvement null.");
-			if (!mouvementsVus.add(mouvement)) {
+		// 1. Vérifier toutes les sources, sans les modifier.
+		Set<Mouvement> sourcesVues = Collections.newSetFromMap(new IdentityHashMap<>());
+		for (Mouvement source : mouvementsSource) {
+			if (source == null) {
+				throw new XComptaCoreNullPointerException("Un mouvement source est null.");
+			}
+			if (!sourcesVues.add(source)) {
 				throw new IllegalArgumentException(
 						"Une même instance de mouvement figure plusieurs fois dans la liste.");
 			}
-			if (mouvement.getEcriture() != null && mouvement.getEcriture() != this) {
-				throw new EcritureMouvementViolationContrainteReferentielleException(
-						"Impossible de rattacher un mouvement déjà attaché à une autre écriture.");
-			}
 		}
 
-		// Deuxième passage : rattachement et copie des références.
-		for (M mouvement : mouvementsSource) {
-			mouvement.rattacherEcriture(this);
-			this.mouvements.add(mouvement);
+		// 2. Construire et contrôler toutes les copies avant tout rattachement.
+		List<M> copies = new ArrayList<>(mouvementsSource.size());
+		Set<Mouvement> copiesVues = Collections.newSetFromMap(new IdentityHashMap<>());
+		for (Mouvement source : mouvementsSource) {
+			M copie = Objects.requireNonNull(fabriqueMouvement.copier(source),
+					"La fabrique a retourné un mouvement null.");
+			if (sourcesVues.contains(copie) || !copiesVues.add(copie)) {
+				throw new IllegalArgumentException(
+						"La fabrique doit créer une nouvelle instance par mouvement source.");
+			}
+			if (copie.getEcriture() != null) {
+				throw new EcritureMouvementViolationContrainteReferentielleException(
+						"Le mouvement copié est déjà rattaché à une écriture.");
+			}
+			copies.add(copie);
+		}
+
+		// 3. Rattacher uniquement les copies, jamais les mouvements sources.
+		for (M copie : copies) {
+			copie.rattacherEcriture(this);
+			this.mouvements.add(copie);
 		}
 	}
 

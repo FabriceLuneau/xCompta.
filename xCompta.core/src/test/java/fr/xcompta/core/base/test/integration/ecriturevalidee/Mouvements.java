@@ -2,6 +2,7 @@ package fr.xcompta.core.base.test.integration.ecriturevalidee;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.math.BigDecimal;
@@ -27,7 +28,7 @@ import fr.xcompta.core.base.exception.XComptaCoreException;
  * <p>
  * Ces tests vérifient notamment l'ordre des mouvements,
  * le comportement de l'itérateur, le caractère non modifiable
- * de la collection exposée et la copie défensive de la liste
+ * de la collection exposée et la copie profonde des mouvements de la liste
  * fournie au constructeur.
  * </p>
  *
@@ -122,15 +123,15 @@ class Mouvements {
             "getMouvements conserve l'ordre des mouvements")
     void getMouvementsConserveOrdre() {
 
-        assertSame(
+        assertNotSame(
                 mouvement1,
                 ecriture.getMouvements().get(0));
 
-        assertSame(
+        assertNotSame(
                 mouvement2,
                 ecriture.getMouvements().get(1));
 
-        assertSame(
+        assertNotSame(
                 mouvement3,
                 ecriture.getMouvements().get(2));
     }
@@ -207,11 +208,11 @@ class Mouvements {
                 2,
                 nouvelleEcriture.getMouvements().size());
 
-        assertSame(
+        assertNotSame(
                 debit,
                 nouvelleEcriture.getMouvements().get(0));
 
-        assertSame(
+        assertNotSame(
                 credit,
                 nouvelleEcriture.getMouvements().get(1));
     }

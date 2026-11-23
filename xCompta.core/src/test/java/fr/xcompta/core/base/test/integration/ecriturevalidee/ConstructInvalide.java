@@ -204,7 +204,7 @@ class ConstructInvalide {
         mouvements.set(1, null);
 
         assertThrows(
-                NullPointerException.class,
+                XComptaCoreNullPointerException.class,
                 () -> new EcritureValidee(1, "Écriture contenant un mouvement null", LocalDate.of(2026, 8, 19), new Journal("OD", "Opérations diverses"), mouvements));
     }
 

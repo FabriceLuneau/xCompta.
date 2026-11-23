@@ -65,14 +65,16 @@ public final class EcritureValidee extends Ecriture<MouvementValidee> {
 	 * @param date       date comptable
 	 * @param journal    journal comptable
 	 * @param libelle    libellé de l'écriture
-	 * @param mouvements mouvements fournis pour reconstruire l'écriture
+	 * @param mouvements mouvements sources, copiés dans de nouvelles instances validées
+	 *                  en conservant leurs identifiants techniques pour la reconstruction
 	 * @throws XComptaCoreException     si une règle métier n'est pas respectée
 	 * @throws IllegalArgumentException si l'identifiant est négatif
 	 */
 	public EcritureValidee(final int id, final String libelle, final LocalDate date, final Journal journal,
 			final List<MouvementValidee> mouvements) throws XComptaCoreException {
 
-		super(id, libelle, date, journal, mouvements);
+		super(id, libelle, date, journal, mouvements,
+				source -> new MouvementValidee(source.getId(), source.getMontant(), source.getCompte()));
 	    
 		testPostConstruction();
 	}
