@@ -231,7 +231,7 @@ class Contrepassation {
                                 "-1200.00"));
 
         return new EcritureDeBrouillard(
-                        100,
+                        100, 1100,
                         "Achat de marchandises",
                         LocalDate.of(2026, 9, 17),
                         journal,

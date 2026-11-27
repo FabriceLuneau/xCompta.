@@ -76,7 +76,7 @@ class AutoVerification {
             List<MouvementValidee> mouvements)
             throws XComptaCoreException {
 
-        return new EcritureValidee(200, "Achat de marchandises", LocalDate.of(2026, 9, 17), new Journal("AC", "Achats"), mouvements);
+        return new EcritureValidee(200, 1200, 2200, "Achat de marchandises", LocalDate.of(2026, 9, 17), new Journal("AC", "Achats"), mouvements);
     }
 
     private List<MouvementValidee> creerMouvements()

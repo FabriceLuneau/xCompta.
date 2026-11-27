@@ -37,6 +37,16 @@ class Contrepassation {
 
     private EcritureValidee ecriture;
 
+    @Test
+    void contrepassationSansIdentifiants() throws XComptaCoreException {
+        var copie = ecriture.contrepasser();
+        assertEquals(0, copie.getId());
+        assertEquals(0, copie.getNumeroDePreEnregistrement());
+        assertEquals(3545, ecriture.getId());
+        assertEquals(4545, ecriture.getNumeroDePreEnregistrement());
+        assertEquals(5545, ecriture.getNumeroEnregistrement());
+    }
+
     @BeforeEach
     void initialiser()
             throws XComptaCoreException {
@@ -80,7 +90,7 @@ class Contrepassation {
                         compteFournisseur);
 
         ecriture =
-                new EcritureValidee(3545, "Achat fournisseur", LocalDate.of(
+                new EcritureValidee(3545, 4545, 5545, "Achat fournisseur", LocalDate.of(
                                 2026,
                                 Month.AUGUST,
                                 19), journal, List.of(

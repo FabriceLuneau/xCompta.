@@ -53,6 +53,7 @@ class Construct5arg {
 
         assertNotNull(ecriture);
         assertEquals(donnees.id(), ecriture.getId());
+        assertEquals((donnees.id() == 0 ? 0 : donnees.id() + 1000), ecriture.getNumeroDePreEnregistrement());
         assertEquals(donnees.date(), ecriture.getDate());
         assertEquals(donnees.libelle(), ecriture.getLibelle());
         assertNotNull(ecriture.getJournal());
@@ -90,7 +91,7 @@ class Construct5arg {
                 .toList();
 
         EcritureDeBrouillard ecriture = new EcritureDeBrouillard(
-                        donnees.id(),
+                        donnees.id(), (donnees.id() == 0 ? 0 : donnees.id() + 1000),
                         donnees.libelle(),
                         donnees.date(),
                         journal,
@@ -100,6 +101,7 @@ class Construct5arg {
         // Reprise des anciens tests unitaires du constructeur complet.
         assertNotNull(ecriture);
         assertEquals(donnees.id(), ecriture.getId());
+        assertEquals((donnees.id() == 0 ? 0 : donnees.id() + 1000), ecriture.getNumeroDePreEnregistrement());
         assertEquals(donnees.date(), ecriture.getDate());
         assertEquals(donnees.libelle(), ecriture.getLibelle());
         assertSame(journal, ecriture.getJournal());

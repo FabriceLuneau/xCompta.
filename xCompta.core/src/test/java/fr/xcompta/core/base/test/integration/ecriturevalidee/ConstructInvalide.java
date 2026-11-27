@@ -59,9 +59,11 @@ class ConstructInvalide {
     void identifiantTechniqueNonAttribue() throws XComptaCoreException {
         final Journal journal = new Journal("OD", "Opérations diverses");
         final EcritureValidee ecriture = new EcritureValidee(
-                0, "Écriture avant persistance", LocalDate.of(2026, 10, 21),
+                0, 0, 0, "Écriture avant persistance", LocalDate.of(2026, 10, 21),
                 journal, creerMouvementsValidesMinimaux());
         org.junit.jupiter.api.Assertions.assertEquals(0, ecriture.getId());
+        org.junit.jupiter.api.Assertions.assertEquals(0, ecriture.getNumeroDePreEnregistrement());
+        org.junit.jupiter.api.Assertions.assertEquals(0, ecriture.getNumeroEnregistrement());
     }
 
     @ParameterizedTest(name = "[{index}] {0}")
@@ -86,7 +88,7 @@ class ConstructInvalide {
 
         assertThrows(
                 exceptionAttendue,
-                () -> new EcritureValidee(id, libelle, date, journal, mouvements),
+                () -> new EcritureValidee(id, (id == 0 ? 0 : id + 1000), (id <= 0 ? 0 : id + 2000), libelle, date, journal, mouvements),
                 description);
     }
 
@@ -133,7 +135,7 @@ class ConstructInvalide {
 
         assertThrows(
                 EcritureCompenseException.class,
-                () -> new EcritureValidee(donnees.id(), donnees.libelle(), donnees.date(), creerJournal(donnees), mouvements));
+                () -> new EcritureValidee(donnees.id(), (donnees.id() == 0 ? 0 : donnees.id() + 1000), (donnees.id() <= 0 ? 0 : donnees.id() + 2000), donnees.libelle(), donnees.date(), creerJournal(donnees), mouvements));
     }
 
     @ParameterizedTest(name = "[{index}] {0}")
@@ -157,7 +159,7 @@ class ConstructInvalide {
 
         assertThrows(
                 EcritureNonEquilibreeException.class,
-                () -> new EcritureValidee(donnees.id(), donnees.libelle(), donnees.date(), creerJournal(donnees), mouvements));
+                () -> new EcritureValidee(donnees.id(), (donnees.id() == 0 ? 0 : donnees.id() + 1000), (donnees.id() <= 0 ? 0 : donnees.id() + 2000), donnees.libelle(), donnees.date(), creerJournal(donnees), mouvements));
     }
 
     @ParameterizedTest(name = "[{index}] {0}")
@@ -167,7 +169,7 @@ class ConstructInvalide {
 
         assertThrows(
                 EcritureNbMouvementsInferieurADeuxException.class,
-                () -> new EcritureValidee(donnees.id(), donnees.libelle(), donnees.date(), creerJournal(donnees), List.of()));
+                () -> new EcritureValidee(donnees.id(), (donnees.id() == 0 ? 0 : donnees.id() + 1000), (donnees.id() <= 0 ? 0 : donnees.id() + 2000), donnees.libelle(), donnees.date(), creerJournal(donnees), List.of()));
     }
 
     @ParameterizedTest(name = "[{index}] {0}")
@@ -181,7 +183,7 @@ class ConstructInvalide {
 
         assertThrows(
                 EcritureNbMouvementsInferieurADeuxException.class,
-                () -> new EcritureValidee(donnees.id(), donnees.libelle(), donnees.date(), creerJournal(donnees), List.of(mouvement)));
+                () -> new EcritureValidee(donnees.id(), (donnees.id() == 0 ? 0 : donnees.id() + 1000), (donnees.id() <= 0 ? 0 : donnees.id() + 2000), donnees.libelle(), donnees.date(), creerJournal(donnees), List.of(mouvement)));
     }
 
     @Test
@@ -190,7 +192,7 @@ class ConstructInvalide {
 
         assertThrows(
                 EcritureNbMouvementsInferieurADeuxException.class,
-                () -> new EcritureValidee(1, "Écriture avec collection null", LocalDate.of(2026, 8, 19), new Journal("OD", "Opérations diverses"), null));
+                () -> new EcritureValidee(1, 1001, 2001, "Écriture avec collection null", LocalDate.of(2026, 8, 19), new Journal("OD", "Opérations diverses"), null));
     }
 
     @Test
@@ -205,7 +207,7 @@ class ConstructInvalide {
 
         assertThrows(
                 XComptaCoreNullPointerException.class,
-                () -> new EcritureValidee(1, "Écriture contenant un mouvement null", LocalDate.of(2026, 8, 19), new Journal("OD", "Opérations diverses"), mouvements));
+                () -> new EcritureValidee(1, 1001, 2001, "Écriture contenant un mouvement null", LocalDate.of(2026, 8, 19), new Journal("OD", "Opérations diverses"), mouvements));
     }
 
     /**

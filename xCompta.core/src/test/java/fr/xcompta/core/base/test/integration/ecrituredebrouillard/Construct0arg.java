@@ -55,6 +55,7 @@ class Construct0arg {
 
         assertNotNull(ecriture);
         assertEquals(donnees.id(), ecriture.getId());
+        assertEquals((donnees.id() == 0 ? 0 : donnees.id() + 1000), ecriture.getNumeroDePreEnregistrement());
         assertEquals(donnees.date(), ecriture.getDate());
         assertEquals(donnees.libelle(), ecriture.getLibelle());
         assertNotNull(ecriture.getJournal());
@@ -97,7 +98,9 @@ class Construct0arg {
         assertNotNull(ecriture.getMouvements());
         assertTrue(ecriture.getMouvements().isEmpty());
 
-        ecriture.setId(donnees.id());
+        if (donnees.id() > 0) {
+            ecriture.attribuerIdentifiants(donnees.id(), donnees.id() + 1000);
+        }
         ecriture.setDate(donnees.date());
         ecriture.setLibelle(donnees.libelle());
 		ecriture.setJournal(creerJournal(donnees));

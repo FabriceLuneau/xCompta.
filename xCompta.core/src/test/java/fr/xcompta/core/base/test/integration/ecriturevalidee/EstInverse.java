@@ -243,7 +243,7 @@ class EstInverse {
             List<MouvementValidee> mouvements)
             throws XComptaCoreException {
 
-        return new EcritureValidee(id, "Achat de marchandises", LocalDate.of(2026, 9, 17), new Journal(
+        return new EcritureValidee(id, (id == 0 ? 0 : id + 1000), (id <= 0 ? 0 : id + 2000), "Achat de marchandises", LocalDate.of(2026, 9, 17), new Journal(
                         "AC",
                         "Achats"), mouvements);
     }

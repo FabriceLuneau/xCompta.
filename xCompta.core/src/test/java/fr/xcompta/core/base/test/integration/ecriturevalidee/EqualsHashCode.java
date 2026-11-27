@@ -161,10 +161,23 @@ class EqualsHashCode {
                 "Achat de marchandises");
     }
 
+    @Test
+    void numerosDifferents() throws XComptaCoreException {
+        var source = creerEcriture(200);
+        var autrePre = new EcritureValidee(200, 1201, 2200, source.getLibelle(),
+                source.getDate(), source.getJournal(), source.getMouvements());
+        var autreDef = new EcritureValidee(200, 1200, 2201, source.getLibelle(),
+                source.getDate(), source.getJournal(), source.getMouvements());
+        assertNotEquals(source, autrePre);
+        assertNotEquals(source, autreDef);
+        assertTrue(source.estEquivalente(autrePre));
+        assertTrue(source.estEquivalente(autreDef));
+    }
+
     private EcritureValidee creerEcriture(int id)
             throws XComptaCoreException {
 
-        return new EcritureValidee(id, "Achat de marchandises", LocalDate.of(2026, 9, 17), new Journal(
+        return new EcritureValidee(id, (id == 0 ? 0 : id + 1000), (id <= 0 ? 0 : id + 2000), "Achat de marchandises", LocalDate.of(2026, 9, 17), new Journal(
                         "AC",
                         "Achats"), List.of(
                         mouvement(

@@ -71,7 +71,7 @@ class Mouvements {
                                 "Fournisseurs"));
 
         ecriture =
-                new EcritureValidee(3545, "Achat fournisseur", LocalDate.of(
+                new EcritureValidee(3545, 4545, 5545, "Achat fournisseur", LocalDate.of(
                                 2026,
                                 Month.AUGUST,
                                 19), new Journal(
@@ -195,7 +195,7 @@ class Mouvements {
                                 credit));
 
         EcritureValidee nouvelleEcriture =
-                new EcritureValidee(4000, "Test copie défensive", LocalDate.of(
+                new EcritureValidee(4000, 5000, 6000, "Test copie défensive", LocalDate.of(
                                 2026,
                                 Month.AUGUST,
                                 20), new Journal(

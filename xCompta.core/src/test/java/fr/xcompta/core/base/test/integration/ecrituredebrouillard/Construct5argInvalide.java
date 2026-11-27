@@ -40,7 +40,7 @@ class Construct5argInvalide {
 	@DisplayName("Constructeur à 5 arguments : refuse un identifiant négatif")
 	void idInvalide(final int id) {
 		assertThrows(XComptaCoreIllegalArgumentException.class,
-				() -> new EcritureDeBrouillard(id, LIBELLE, DATE, JOURNAL, new ArrayList<MouvementDeBrouillard>()));
+				() -> new EcritureDeBrouillard(id, 1000, LIBELLE, DATE, JOURNAL, new ArrayList<MouvementDeBrouillard>()));
 	}
 
 }

@@ -187,7 +187,7 @@ class CalculsMontants {
                         new BigDecimal("-1200.00")));
 
         return new EcritureDeBrouillard(
-                        100,
+                        100, 1100,
                         JeuDonneesEcriture.LIBELLE,
                         JeuDonneesEcriture.DATE,
                         journal,
@@ -231,6 +231,6 @@ class CalculsMontants {
                                         "401",
                                         "Fournisseurs")));
 
-        return new EcritureValidee(200, JeuDonneesEcriture.LIBELLE, JeuDonneesEcriture.DATE, journal, mouvements);
+        return new EcritureValidee(200, 1200, 2200, JeuDonneesEcriture.LIBELLE, JeuDonneesEcriture.DATE, journal, mouvements);
     }
 }

@@ -78,7 +78,7 @@ class ToString {
     private EcritureValidee creerEcriture()
             throws XComptaCoreException {
 
-        return new EcritureValidee(200, "Achat de marchandises", LocalDate.of(2026, 9, 17), new Journal(
+        return new EcritureValidee(200, 1200, 2200, "Achat de marchandises", LocalDate.of(2026, 9, 17), new Journal(
                         "AC",
                         "Achats"), List.of(
                         mouvement(

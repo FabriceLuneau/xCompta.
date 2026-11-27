@@ -36,7 +36,9 @@ class ValidationConstruct0arg {
         assertNotNull(brouillard.getMouvements());
         assertTrue(brouillard.getMouvements().isEmpty());
 
-        brouillard.setId(donnees.id());
+        if (donnees.id() > 0) {
+            brouillard.attribuerIdentifiants(donnees.id(), donnees.id() + 1000);
+        }
         brouillard.setDate(donnees.date());
         brouillard.setLibelle(donnees.libelle());
         brouillard.setJournal(VerificationCopieValidation.creerJournal(donnees));

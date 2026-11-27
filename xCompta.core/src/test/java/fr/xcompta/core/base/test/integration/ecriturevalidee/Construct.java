@@ -66,7 +66,7 @@ class Construct {
             mouvements.add(creerMouvement(donneesMouvement));
         }
         
-        EcritureValidee ecriture = new EcritureValidee(donnees.id(), donnees.libelle(), donnees.date(), journal, mouvements);
+        EcritureValidee ecriture = new EcritureValidee(donnees.id(), (donnees.id() == 0 ? 0 : donnees.id() + 1000), (donnees.id() <= 0 ? 0 : donnees.id() + 2000), donnees.libelle(), donnees.date(), journal, mouvements);
 
         verifierEcriture(ecriture, donnees);
 
@@ -88,6 +88,8 @@ class Construct {
 
 		assertNotNull(ecriture);
 		assertEquals(donnees.id(), ecriture.getId());
+        assertEquals(donnees.id() <= 0 ? 0 : donnees.id() + 2000, ecriture.getNumeroEnregistrement());
+        assertEquals((donnees.id() == 0 ? 0 : donnees.id() + 1000), ecriture.getNumeroDePreEnregistrement());
 		assertEquals(donnees.date(), ecriture.getDate());
 		assertEquals(donnees.libelle(), ecriture.getLibelle());
 

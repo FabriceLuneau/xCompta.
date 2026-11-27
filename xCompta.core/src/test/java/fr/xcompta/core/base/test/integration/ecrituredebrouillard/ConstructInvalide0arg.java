@@ -31,6 +31,6 @@ class ConstructInvalide0arg {
 	void idInvalide(final int id) throws Exception {
 		final EcritureDeBrouillard ecriture = new EcritureDeBrouillard();
 
-		assertThrows(XComptaCoreIllegalArgumentException.class, () -> ecriture.setId(id));
+		assertThrows(XComptaCoreIllegalArgumentException.class, () -> ecriture.attribuerIdentifiants(id, (id == 0 ? 0 : id + 1000)));
 	}
 }

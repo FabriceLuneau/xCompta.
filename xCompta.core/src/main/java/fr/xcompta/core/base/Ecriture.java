@@ -37,8 +37,8 @@ public abstract class Ecriture<M extends Mouvement> implements Iterable<M>, Vali
 	/** Identifiant technique de l'écriture. */
 	int id = 0; // État commun : modifiable uniquement par EcritureDeBrouillard.
 	
-	//numéro de préenregistrement comun aux aux ecritures de brouillard et aux écritures validées
-	//int numeroDeOreEnregistrement = 0; 
+	/** Numéro métier de préenregistrement ; zéro signifie non attribué. */
+	int numeroDePreEnregistrement = 0; 
 
 	/** Date comptable de l'écriture. */
 	LocalDate date = LocalDate.now();
@@ -90,11 +90,12 @@ public abstract class Ecriture<M extends Mouvement> implements Iterable<M>, Vali
 		T copier(Mouvement source) throws XComptaCoreException;
 	}
 
-	protected Ecriture(int id, String libelle, LocalDate date, Journal journal,
+	protected Ecriture(int id, int numeroDePreEnregistrement, String libelle, LocalDate date, Journal journal,
 			List<? extends Mouvement> mouvementsSource,
 			FabriqueMouvement<M> fabriqueMouvement)
 			throws XComptaCoreException {
 		this.id = id;
+		this.numeroDePreEnregistrement = numeroDePreEnregistrement;
 		this.libelle = libelle;
 		this.date = date;
 		this.journal = journal;
@@ -147,6 +148,14 @@ public abstract class Ecriture<M extends Mouvement> implements Iterable<M>, Vali
 	 */
 	public int getId() {
 		return id;
+	}
+	
+	/**
+	 * Retourne le numéro de préenregistrement
+	 * @return
+	 */
+	public int getNumeroDePreEnregistrement() {
+		return numeroDePreEnregistrement;
 	}
 
 	/**

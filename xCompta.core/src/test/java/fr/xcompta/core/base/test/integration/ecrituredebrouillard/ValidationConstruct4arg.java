@@ -28,7 +28,7 @@ class ValidationConstruct4arg {
     void verifierValidation(DonneesEcriture donnees) throws XComptaCoreException {
         Journal journal = VerificationCopieValidation.creerJournal(donnees);
         EcritureDeBrouillard brouillard = new EcritureDeBrouillard(
-                donnees.id(), donnees.libelle(), donnees.date(), journal);
+                donnees.id(), (donnees.id() == 0 ? 0 : donnees.id() + 1000), donnees.libelle(), donnees.date(), journal);
         assertSame(journal, brouillard.getJournal());
         assertNotNull(brouillard.getMouvements());
         assertTrue(brouillard.getMouvements().isEmpty());

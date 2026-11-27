@@ -29,7 +29,7 @@ class ValidationConstruct5arg {
         List<MouvementDeBrouillard> mouvements =
                 VerificationCopieValidation.creerMouvements(donnees);
         EcritureDeBrouillard brouillard = new EcritureDeBrouillard(
-                donnees.id(), donnees.libelle(), donnees.date(), journal, mouvements);
+                donnees.id(), (donnees.id() == 0 ? 0 : donnees.id() + 1000), donnees.libelle(), donnees.date(), journal, mouvements);
         assertSame(journal, brouillard.getJournal());
         assertNotNull(brouillard.getMouvements());
 

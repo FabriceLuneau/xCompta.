@@ -77,7 +77,7 @@ public final class EcritureDeBrouillard extends Ecriture<MouvementDeBrouillard> 
 	 * @throws XComptaCoreException si l'état initial de l'objet est incohérent
 	 */
 	public EcritureDeBrouillard() throws XComptaCoreException {
-		super(0, "nouvelle écriture", LocalDate.now(), null, null,
+		super(0, 0, "nouvelle écriture", LocalDate.now(), null, null,
 				source -> new MouvementDeBrouillard(source.getCompte(), source.getMontant()));
 		
 		// Aucun mouvement initial : aucun rattachement nécessaire.
@@ -89,25 +89,17 @@ public final class EcritureDeBrouillard extends Ecriture<MouvementDeBrouillard> 
 	 * Une collection vide de mouvements est initialisée.
 	 *
 	 * @param id      identifiant technique de l'écriture
+	 * @param numeroDePreEnregistrement numéro métier (0 si non attribué)
 	 * @param date    date comptable
 	 * @param journal journal comptable
 	 * @param libelle libellé de l'écriture
 	 *
 	 * @throws XComptaCoreException si l'état reconstruit est incohérent
 	 */
-	public EcritureDeBrouillard(final int id, final String libelle, final LocalDate date, final Journal journal)
+	public EcritureDeBrouillard(final int id, final int numeroDePreEnregistrement,final String libelle, final LocalDate date, final Journal journal)
 			throws XComptaCoreException {
 
-		/*
-		 * FUTUR : ajouter le numéro de préenregistrement à ce constructeur et à l'appel
-		 * de super(...), après réactivation de cette propriété dans Ecriture. Le type
-		 * long reste à confirmer.
-		 *
-		 * Exemple de signature envisagée (non compilée) : EcritureDeBrouillard(int id,
-		 * long numeroPreEnregistrement, LocalDate date, String libelle, Journal
-		 * journal)
-		 */
-		super(id, libelle, date, journal, List.of(),
+		super(id, numeroDePreEnregistrement, libelle, date, journal, List.of(),
 				source -> new MouvementDeBrouillard(source.getCompte(), source.getMontant()));
 
 		testPostConstruction();
@@ -119,6 +111,7 @@ public final class EcritureDeBrouillard extends Ecriture<MouvementDeBrouillard> 
 	 * sans modifier les mouvements sources ni valider son contenu comptable.
 	 *
 	 * @param id         identifiant technique (0 si non persisté)
+	 * @param numeroDePreEnregistrement numéro métier (0 si non attribué)
 	 * @param libelle    libellé comptable
 	 * @param date       date comptable
 	 * @param journal    journal comptable
@@ -126,50 +119,34 @@ public final class EcritureDeBrouillard extends Ecriture<MouvementDeBrouillard> 
 	 * @throws XComptaCoreException si les données ou les rattachements sont
 	 *                              invalides
 	 */
-	public EcritureDeBrouillard(final int id, final String libelle, final LocalDate date, final Journal journal,
+	public EcritureDeBrouillard(final int id, final int numeroDePreEnregistrement, final String libelle, final LocalDate date, final Journal journal,
 			final List<MouvementDeBrouillard> mouvements) throws XComptaCoreException {
-		super(id, libelle, date, journal, mouvements,
+		super(id, numeroDePreEnregistrement, libelle, date, journal, mouvements,
 				source -> new MouvementDeBrouillard(source.getCompte(), source.getMontant()));
 		
 		testPostConstruction();
 	}
 
 	/**
-	 * Attribue l'identifiant technique du brouillard.
-	 *
-	 * <p>
-	 * La classe mère applique la règle commune : {@code 0} signifie non persisté,
-	 * un identifiant positif est définitif, un négatif est interdit.
-	 * </p>
-	 *
-	 * @param id identifiant à attribuer
-	 * @throws IllegalArgumentException                          si l'identifiant
-	 *                                                           est négatif
-	 * @throws EcritureViolationContrainteReferentielleException si un identifiant
-	 *                                                           positif a déjà été
-	 *                                                           attribué
-	 * @throws XComptaCoreIllegalArgumentException 
+	 * Attribue les identifiants lors de la première persistance.
+	 * Un numéro provisoire déjà attribué doit être conservé.
+	 * @param id identifiant technique strictement positif
+	 * @param numeroDePreEnregistrement numéro métier strictement positif
+	 * @throws XComptaCoreIllegalArgumentException si une valeur est invalide
+	 * @throws EcritureViolationContrainteReferentielleException si un identifiant définitif serait modifié
 	 */
-	public void setId(final int id) throws EcritureViolationContrainteReferentielleException, XComptaCoreIllegalArgumentException {
-		if (id < 0) {
-			throw new XComptaCoreIllegalArgumentException("L'identifiant d'une écriture ne peut pas être négatif.");
+	public void attribuerIdentifiants(final int id, final int numeroDePreEnregistrement)
+			throws XComptaCoreIllegalArgumentException, EcritureViolationContrainteReferentielleException {
+		if (id <= 0 || numeroDePreEnregistrement <= 0) {
+			throw new XComptaCoreIllegalArgumentException("Les identifiants doivent être strictement positifs.");
 		}
-		if (this.id > 0) {
-			throw new EcritureViolationContrainteReferentielleException(
-					"L'identifiant de l'écriture a déjà été attribué.");
+		if (this.id > 0 || (this.numeroDePreEnregistrement > 0
+				&& this.numeroDePreEnregistrement != numeroDePreEnregistrement)) {
+			throw new EcritureViolationContrainteReferentielleException("Les identifiants ont déjà été attribués.");
 		}
 		this.id = id;
+		this.numeroDePreEnregistrement = numeroDePreEnregistrement;
 	}
-
-	/*
-	 * FUTUR : numéro de préenregistrement (désactivé).
-	 *
-	 * L'attribut et le getter appartiendront à Ecriture pour conserver ce numéro
-	 * lors de la validation. Zéro signifie « non attribué » ; une fois attribué, le
-	 * numéro sera immuable. Son unicité par comptabilité et son attribution
-	 * transactionnelle seront garanties par le service de persistance. TODO :
-	 * définir le point d'accès contrôlé pour son attribution.
-	 */
 
 	/**
 	 * Modifie le libellé de cette écriture de brouillard.
@@ -509,7 +486,7 @@ public final class EcritureDeBrouillard extends Ecriture<MouvementDeBrouillard> 
 	 * </p>
 	 *
 	 * <p>
-	 * FUTUR : conserver aussi le numéro de préenregistrement et attribuer le numéro
+	 * Le numéro de préenregistrement est conservé. La persistance attribuera le numéro
 	 * définitif de manière transactionnelle.
 	 * </p>
 	 *
@@ -526,7 +503,7 @@ public final class EcritureDeBrouillard extends Ecriture<MouvementDeBrouillard> 
 			mouvementsValides.add(new MouvementValidee(0, mouvement.getMontant(), mouvement.getCompte()));
 		}
 
-		return new EcritureValidee(0, getLibelle(), getDate(), getJournal(), mouvementsValides);
+		return new EcritureValidee(0, getNumeroDePreEnregistrement(), 0, getLibelle(), getDate(), getJournal(), mouvementsValides);
 	}
 
 	/**
@@ -579,6 +556,9 @@ public final class EcritureDeBrouillard extends Ecriture<MouvementDeBrouillard> 
 	protected void testPostConstruction() throws EcritureException, XComptaCoreIllegalArgumentException, XComptaCoreNullPointerException {
 //la seule contrainte pour une écriture de brouillard est d'avoir un id à 0
 		// 0 : non persistée ; positif : identifiant déjà attribué.
+		if (getNumeroDePreEnregistrement() < 0 || (getId() > 0 && getNumeroDePreEnregistrement() == 0)) {
+			throw new XComptaCoreIllegalArgumentException("Numéro de préenregistrement incohérent.");
+		}
 		if (getId() < 0) {
 			throw new XComptaCoreIllegalArgumentException(
 					"L'identifiant d'une écriture de brouillard " + "ne peut pas être négatif.");
@@ -642,6 +622,7 @@ public final class EcritureDeBrouillard extends Ecriture<MouvementDeBrouillard> 
         if (this == objet) return true;
         if (!(objet instanceof EcritureDeBrouillard autre)) return false;
         if (getId() != autre.getId()
+                || getNumeroDePreEnregistrement() != autre.getNumeroDePreEnregistrement()
                 || !Objects.equals(getLibelle(), autre.getLibelle())
                 || !Objects.equals(getDate(), autre.getDate())
                 || !Objects.equals(getJournal(), autre.getJournal())
@@ -662,7 +643,7 @@ public final class EcritureDeBrouillard extends Ecriture<MouvementDeBrouillard> 
 
     @Override
     public int hashCode() {
-        int resultat = Objects.hash(getId(), getLibelle(), getDate(), getJournal());
+        int resultat = Objects.hash(getId(), getNumeroDePreEnregistrement(), getLibelle(), getDate(), getJournal());
         for (MouvementDeBrouillard mouvement : getMouvements()) {
             BigDecimal montant = mouvement.getMontant();
             resultat = 31 * resultat + Objects.hash(mouvement.getId(), mouvement.getCompte(),

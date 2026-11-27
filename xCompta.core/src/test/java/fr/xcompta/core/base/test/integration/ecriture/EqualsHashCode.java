@@ -521,7 +521,7 @@ class EqualsHashCode {
         }
 
         return new EcritureDeBrouillard(
-                        id,
+                        id, (id == 0 ? 0 : id + 1000),
                         libelle,
                         date,
                         journal,
@@ -569,6 +569,6 @@ class EqualsHashCode {
                                     donnee.libelleCompte())));
         }
 
-        return new EcritureValidee(id, libelle, date, journal, mouvements);
+        return new EcritureValidee(id, (id == 0 ? 0 : id + 1000), (id <= 0 ? 0 : id + 2000), libelle, date, journal, mouvements);
     }
 }

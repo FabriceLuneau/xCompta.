@@ -53,6 +53,7 @@ class Construct4arg {
 
         assertNotNull(ecriture);
         assertEquals(donnees.id(), ecriture.getId());
+        assertEquals((donnees.id() == 0 ? 0 : donnees.id() + 1000), ecriture.getNumeroDePreEnregistrement());
         assertEquals(donnees.date(), ecriture.getDate());
         assertEquals(donnees.libelle(), ecriture.getLibelle());
         assertNotNull(ecriture.getJournal());
@@ -86,11 +87,12 @@ class Construct4arg {
 
         Journal journal = creerJournal(donnees);
 
-        EcritureDeBrouillard ecriture = new EcritureDeBrouillard(donnees.id(), donnees.libelle(), donnees.date(), journal);
+        EcritureDeBrouillard ecriture = new EcritureDeBrouillard(donnees.id(), (donnees.id() == 0 ? 0 : donnees.id() + 1000), donnees.libelle(), donnees.date(), journal);
 
         // Reprise des anciens tests unitaires de l'entête.
         assertNotNull(ecriture);
         assertEquals(donnees.id(), ecriture.getId());
+        assertEquals((donnees.id() == 0 ? 0 : donnees.id() + 1000), ecriture.getNumeroDePreEnregistrement());
         assertEquals(donnees.date(), ecriture.getDate());
         assertEquals(donnees.libelle(), ecriture.getLibelle());
         assertSame(journal, ecriture.getJournal());

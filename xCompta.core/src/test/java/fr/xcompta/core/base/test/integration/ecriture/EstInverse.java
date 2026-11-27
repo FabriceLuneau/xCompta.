@@ -150,7 +150,7 @@ class EstInverse {
                 new Journal("AC", "Achats");
 
         EcritureValidee autre =
-                new EcritureValidee(200, "Autre écriture", DATE, journal, List.of(
+                new EcritureValidee(200, 1200, 2200, "Autre écriture", DATE, journal, List.of(
                                 mouvementValide(
                                         11,
                                         "607",
@@ -185,7 +185,7 @@ class EstInverse {
                 new Journal("AC", "Achats");
 
         EcritureValidee autre =
-                new EcritureValidee(200, "Autre écriture", DATE, journal, List.of(
+                new EcritureValidee(200, 1200, 2200, "Autre écriture", DATE, journal, List.of(
                                 mouvementValide(
                                         11,
                                         "606",
@@ -238,7 +238,7 @@ class EstInverse {
                 new Journal("AC", "Achats");
 
         return new EcritureDeBrouillard(
-                        100,
+                        100, 1100,
                         inverse
                         ? "Contrepassation"
                         : "Achat de marchandises",
@@ -311,7 +311,7 @@ class EstInverse {
                                 tva,
                                 fournisseur);
 
-        return new EcritureValidee(id, inverse
+        return new EcritureValidee(id, (id == 0 ? 0 : id + 1000), (id <= 0 ? 0 : id + 2000), inverse
                         ? "Contrepassation"
                         : "Achat de marchandises", DATE, new Journal("AC", "Achats"), mouvements);
     }

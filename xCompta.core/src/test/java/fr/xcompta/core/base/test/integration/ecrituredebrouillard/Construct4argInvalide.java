@@ -38,6 +38,6 @@ class Construct4argInvalide {
 	@DisplayName("Constructeur à 4 arguments : refuse un identifiant négatif")
 	void idInvalide(final int id) {
 		assertThrows(XComptaCoreIllegalArgumentException.class,
-				() -> new EcritureDeBrouillard(id, LIBELLE, DATE, JOURNAL));
+				() -> new EcritureDeBrouillard(id, (id == 0 ? 0 : id + 1000), LIBELLE, DATE, JOURNAL));
 	}
 }

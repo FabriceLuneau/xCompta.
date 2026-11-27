@@ -78,7 +78,7 @@ class FonctionIUtil {
                         compteFournisseur);
 
         ecriture =
-                new EcritureValidee(3545, "Achat fournisseur", LocalDate.of(
+                new EcritureValidee(3545, 4545, 5545, "Achat fournisseur", LocalDate.of(
                                 2026,
                                 Month.AUGUST,
                                 19), journal, List.of(

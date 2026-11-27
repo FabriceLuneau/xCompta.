@@ -92,6 +92,8 @@ class ValidationCopieCasParticuliers {
         EcritureDeBrouillard brouillard = creerEcriture();
         EcritureValidee copie = brouillard.copierPourValidation();
         assertEquals(0, copie.getId());
+        assertEquals(brouillard.getNumeroDePreEnregistrement(), copie.getNumeroDePreEnregistrement());
+        assertEquals(0, copie.getNumeroEnregistrement());
         assertEquals(brouillard.getMouvements().size(), copie.getMouvements().size());
         for (int i = 0; i < copie.getMouvements().size(); i++) {
             assertEquals(0, copie.getMouvements().get(i).getId());
@@ -244,7 +246,7 @@ class ValidationCopieCasParticuliers {
                                 "-1200.00"));
 
         return new EcritureDeBrouillard(
-                        100,
+                        100, 1100,
                         "Achat de marchandises",
                         LocalDate.of(2026, 9, 17),
                         journal,
